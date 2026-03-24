@@ -1,6 +1,6 @@
 # Distributed ML Examples
 
-Runnable code examples that accompany the [Distributed ML Notes](https://github.com/lucyge/Distributed-ML-Notes) learning series.
+Runnable code examples that accompany the [Distributed ML Notes](https://github.com/lucyge2022/Distributed-ML-Notes) learning series.
 
 Each subdirectory is a self-contained toy program with its own `README.md` and `requirements.txt`.
 
@@ -10,7 +10,7 @@ Each subdirectory is a self-contained toy program with its own `README.md` and `
 
 | Directory | What it covers | Related notes chapter |
 |---|---|---|
-| [`ddp-testrun`](./ddp-testrun/) | PyTorch DDP training with Ring AllReduce on MNIST | [Chapter 3 — Worker-Only (AllReduce)](https://github.com/lucyge/Distributed-ML-Notes) |
+| [`ddp-testrun`](./ddp-testrun/) | PyTorch DDP training with Ring AllReduce on MNIST | [Chapter 3 — Worker-Only (AllReduce)](https://lucyge2022.github.io/Distributed-ML-Notes/chapter-3/AllReduce-Pattern.html) |
 
 ---
 
@@ -28,6 +28,5 @@ python ddp_train.py
 
 ## Planned examples
 
-- `ps-pattern-sim` — Parameter Server + Workers pattern simulation
 - `allreduce-from-scratch` — Ring AllReduce implemented manually without DDP
 - `dataset-loading` — Distributed dataset sharding and DataLoader setup
