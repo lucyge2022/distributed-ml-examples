@@ -21,42 +21,74 @@ This folder uses **Qwen2.5-0.5B-Instruct** as a stand-in for a much larger base 
 | `01_lora_math.py` | Pure PyTorch: shapes, SVD intuition, tiny LoRA linear layer |
 | `02_train_lora_qwen.py` | Download Qwen-0.5B, attach PEFT LoRA, train, save adapter, generate |
 | `03_eval_base_vs_lora.py` | Benchmark base vs base+LoRA: PPL / NLL + side-by-side generations |
+| `04_visualize_eval.py` | Turn the eval JSON into PNG charts |
 | `requirements.txt` | Dependencies |
 
-## Setup
+---
+
+## How to run this test and generate results
+
+### 1. One-time setup
 
 ```bash
 cd "test Laura"
 python3.11 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-The first run of `02_train_lora_qwen.py` downloads `Qwen/Qwen2.5-0.5B-Instruct` from Hugging Face (~1 GB) into your HF cache.
+The first train run downloads `Qwen/Qwen2.5-0.5B-Instruct` from Hugging Face (~1 GB) into your HF cache.
 
-## Run
+### 2. End-to-end pipeline (train → eval → plots)
 
 ```bash
-# 1) math / shapes / SVD intuition (no download)
+# A) optional: understand the ΔW ≈ B@A math (no model download)
 python 01_lora_math.py
 
-# 2) real LoRA on Qwen-0.5B (downloads model, trains ~40 steps on CPU)
+# B) train a tiny LoRA adapter on Qwen-0.5B  →  artifacts/qwen05b_lora/
 python 02_train_lora_qwen.py
+# optional knobs:
+# python 02_train_lora_qwen.py --rank 8 --alpha 16 --steps 40
 
-# optional knobs
-python 02_train_lora_qwen.py --rank 8 --alpha 16 --steps 40
-
-# 3) compare base vs base+LoRA (PPL + side-by-side generations)
+# C) evaluate base vs base+LoRA               →  artifacts/eval_base_vs_lora.json
 python 03_eval_base_vs_lora.py
+
+# D) visualize the eval JSON                  →  artifacts/plots/*.png
+python 04_visualize_eval.py
 ```
 
-`03_eval_base_vs_lora.py` writes `artifacts/eval_base_vs_lora.json`. On **general** held-out prompts you want small `|ΔNLL|` and high generation overlap — that means LoRA did not wreck the base model. On **LoRA-domain** prompts a light toy adapter may still look similar; a longer train would pull them apart.
+Open the PNGs under `artifacts/plots/` (or the JSON if you want raw numbers).
 
-Adapter weights land in `artifacts/qwen05b_lora/` (a few MB). Reload later with:
+### 3. What each artifact means
+
+| Output | Meaning |
+|---|---|
+| `artifacts/qwen05b_lora/` | Saved LoRA adapter only (~2 MB weights), not a full model copy |
+| `artifacts/eval_base_vs_lora.json` | Per-prompt NLL/PPL, generations, Jaccard, exact-match |
+| `artifacts/plots/summary_base_vs_lora.png` | Mean PPL / Jaccard / exact-match by split |
+| `artifacts/plots/delta_nll_summary.png` | How much LoRA shifted likelihood (`ΔNLL ≈ 0` ⇒ similar) |
+| `artifacts/plots/nll_by_prompt_*.png` | Per-prompt base vs LoRA NLL bars |
+| `artifacts/plots/jaccard_by_prompt_*.png` | Per-prompt generation overlap |
+
+**How to read “more or less the same”**
+
+- On **GENERAL** prompts: small `|mean ΔNLL|` (roughly &lt; 0.15) and higher Jaccard/exact-match ⇒ LoRA did not wreck the base.
+- On **LORA-DOMAIN** prompts: larger ΔNLL / lower overlap is OK — that is the adapter doing work.
+
+### 4. Re-run pieces independently
 
 ```bash
+# reload existing adapter and generate only
 python 02_train_lora_qwen.py --skip-train
+
+# re-eval without retraining (needs artifacts/qwen05b_lora/)
+python 03_eval_base_vs_lora.py
+
+# re-plot without re-eval (needs artifacts/eval_base_vs_lora.json)
+python 04_visualize_eval.py
 ```
+
+---
 
 ## How this maps to a big-model LoRA job
 
@@ -65,6 +97,7 @@ python 02_train_lora_qwen.py --skip-train
 3. Optimize only `lora_A` / `lora_B` (and optionally biases you choose).
 4. `save_pretrained` the adapter directory — not a full copy of the base.
 5. At serve time: load base once, `PeftModel.from_pretrained(base, adapter_dir)`.
+6. Eval + plot the same way: compare base vs base+adapter on held-out prompts.
 
 ## Mental model check
 
