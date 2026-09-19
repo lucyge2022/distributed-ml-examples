@@ -117,7 +117,7 @@ def train(args: argparse.Namespace) -> None:
 
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
-        torch_dtype=torch.float32,
+        dtype=torch.float32,
         trust_remote_code=True,
     )
 
@@ -180,7 +180,7 @@ def generate_demo(args: argparse.Namespace) -> None:
     tokenizer = AutoTokenizer.from_pretrained(args.out, trust_remote_code=True)
     base = AutoModelForCausalLM.from_pretrained(
         args.model,
-        torch_dtype=torch.float32,
+        dtype=torch.float32,
         trust_remote_code=True,
     )
     model = PeftModel.from_pretrained(base, args.out)
