@@ -20,6 +20,7 @@ This folder uses **Qwen2.5-0.5B-Instruct** as a stand-in for a much larger base 
 |---|---|
 | `01_lora_math.py` | Pure PyTorch: shapes, SVD intuition, tiny LoRA linear layer |
 | `02_train_lora_qwen.py` | Download Qwen-0.5B, attach PEFT LoRA, train, save adapter, generate |
+| `03_eval_base_vs_lora.py` | Benchmark base vs base+LoRA: PPL / NLL + side-by-side generations |
 | `requirements.txt` | Dependencies |
 
 ## Setup
@@ -44,7 +45,12 @@ python 02_train_lora_qwen.py
 
 # optional knobs
 python 02_train_lora_qwen.py --rank 8 --alpha 16 --steps 40
+
+# 3) compare base vs base+LoRA (PPL + side-by-side generations)
+python 03_eval_base_vs_lora.py
 ```
+
+`03_eval_base_vs_lora.py` writes `artifacts/eval_base_vs_lora.json`. On **general** held-out prompts you want small `|ΔNLL|` and high generation overlap — that means LoRA did not wreck the base model. On **LoRA-domain** prompts a light toy adapter may still look similar; a longer train would pull them apart.
 
 Adapter weights land in `artifacts/qwen05b_lora/` (a few MB). Reload later with:
 
