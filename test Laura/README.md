@@ -106,3 +106,13 @@ For attention projection `W_q` of shape `(a, b)`:
 - full fine-tune stores / updates `a×b` numbers
 - LoRA stores `a×r` and `r×b` (your picture)
 - forward uses `y = W x + scaling · B (A x)` so the big `W` stays frozen
+
+### SVD vs LoRA in this folder (important)
+
+| Script | What it actually does |
+|---|---|
+| `01_lora_math.py` | SVD on a **tiny synthetic** matrix (demo only). Does **not** touch Qwen. |
+| `02_train_lora_qwen.py` | Learns `A`,`B` with **gradient descent** (PEFT). No SVD. |
+| `05_svd_cpu_timing.py` | Times CPU SVD on **random matrices shaped like** Qwen layers. Still not loading Qwen, and not diffing two finetuned models. |
+
+We did **not** take two fine-tuned Qwens, form `ΔW = W₂−W₁`, and SVD that. That is a different (valid) workflow sometimes used to *compress* a full fine-tune into LoRA-like factors after the fact.
