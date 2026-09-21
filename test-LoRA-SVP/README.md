@@ -18,10 +18,12 @@ This folder uses **Qwen2.5-0.5B-Instruct** as a stand-in for a much larger base 
 
 | File | What it does |
 |---|---|
+| `svp-low-rank-approximation-intro.md` | SVD / truncated SVD / \(A,B\) 分配与 serving scaling 说明 |
 | `01_lora_math.py` | Pure PyTorch: shapes, SVD intuition, tiny LoRA linear layer |
 | `02_train_lora_qwen.py` | Download Qwen-0.5B, attach PEFT LoRA, train, save adapter, generate |
 | `03_eval_base_vs_lora.py` | Benchmark base vs base+LoRA: PPL / NLL + side-by-side generations |
 | `04_visualize_eval.py` | Turn the eval JSON into PNG charts |
+| `05_svd_cpu_timing.py` | CPU SVD timing on Qwen-sized random matrices |
 | `requirements.txt` | Dependencies |
 
 ---

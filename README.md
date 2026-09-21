@@ -12,7 +12,7 @@ Each subdirectory is a self-contained toy program with its own `README.md` and `
 |---|---|---|
 | [`ddp-testrun`](./ddp-testrun/) | PyTorch DDP training with Ring AllReduce on MNIST | [Chapter 3 — Worker-Only (AllReduce)](https://lucyge2022.github.io/Distributed-ML-Notes/chapter-3/AllReduce-Pattern.html) |
 | [`vllm-test`](./vllm-test/) | vLLM serving: prefill vs decode, static vs continuous batching, TTFT, KV cache / PagedAttention | [Prefill vs Decode](https://github.com/lucyge2022/Distributed-ML-Notes/blob/main/src/LLM%20inference/Prefill%20%26%20Decode.md) |
-| [`test Laura`](./test%20Laura/) | LoRA math (`ΔW ≈ B@A`) + PEFT LoRA on Qwen2.5-0.5B | — |
+| [`test-LoRA-SVP`](./test-LoRA-SVP/) | LoRA math (`ΔW ≈ B@A`) + PEFT on Qwen2.5-0.5B + SVD→LoRA intro | — |
 
 ---
 
